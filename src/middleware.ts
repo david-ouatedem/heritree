@@ -1,12 +1,12 @@
-import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 const publicRoutes = ["/", "/login", "/signup"];
 
-export default auth((req) => {
-  const { pathname } = req.nextUrl;
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
 
-  // Allow public routes and API auth routes
+  // Allow public routes, API auth routes, and static assets
   if (
     publicRoutes.includes(pathname) ||
     pathname.startsWith("/api/auth")
@@ -14,15 +14,19 @@ export default auth((req) => {
     return NextResponse.next();
   }
 
-  // Redirect unauthenticated users to login
-  if (!req.auth) {
-    const loginUrl = new URL("/login", req.url);
+  // Check for session token (set by NextAuth)
+  const token =
+    request.cookies.get("authjs.session-token")?.value ||
+    request.cookies.get("__Secure-authjs.session-token")?.value;
+
+  if (!token) {
+    const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
   return NextResponse.next();
-});
+}
 
 export const config = {
   matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
