@@ -1,8 +1,9 @@
 "use client";
 
 import { deletePerson } from "@/lib/actions/person";
-import { Trash2, Calendar, MapPin } from "lucide-react";
+import { Trash2, Calendar, MapPin, ExternalLink } from "lucide-react";
 import { useState } from "react";
+import Link from "next/link";
 
 type PersonWithRelationships = {
   id: string;
@@ -90,7 +91,10 @@ export function PersonCard({
     <div className="rounded-xl border border-gray-200 bg-white p-5">
       <div className="mb-3 flex items-start justify-between">
         <div>
-          <h3 className="font-semibold">{fullName}</h3>
+          <Link href={`/person/${person.id}`} className="font-semibold hover:text-green-700 flex items-center gap-1">
+            {fullName}
+            <ExternalLink className="h-3 w-3 text-gray-300" />
+          </Link>
           <div className="mt-1 flex items-center gap-2">
             {person.gender && (
               <span

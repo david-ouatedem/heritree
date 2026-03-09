@@ -2,6 +2,7 @@
 
 import { Handle, Position } from "@xyflow/react";
 import type { NodeProps } from "@xyflow/react";
+import { useRouter } from "next/navigation";
 
 function formatYear(date: Date | string | null) {
   if (!date) return null;
@@ -39,7 +40,8 @@ type PersonNodeData = {
   isLiving: boolean;
 };
 
-export function PersonNode({ data }: NodeProps) {
+export function PersonNode({ id, data }: NodeProps) {
+  const router = useRouter();
   const d = data as PersonNodeData;
   const fullName = [d.firstName, d.lastName].filter(Boolean).join(" ");
   const birthYear = formatYear(d.birthDate);
@@ -55,7 +57,8 @@ export function PersonNode({ data }: NodeProps) {
 
   return (
     <div
-      className={`rounded-lg border-2 ${getGenderBorder(d.gender)} ${getGenderBg(d.gender)} px-4 py-3 shadow-sm min-w-[160px] text-center`}
+      onClick={() => router.push(`/person/${id}`)}
+      className={`cursor-pointer rounded-lg border-2 ${getGenderBorder(d.gender)} ${getGenderBg(d.gender)} px-4 py-3 shadow-sm min-w-[160px] text-center transition hover:shadow-md`}
     >
       <Handle type="target" position={Position.Top} className="!bg-gray-400" />
       <p className="text-sm font-semibold truncate">{fullName}</p>
