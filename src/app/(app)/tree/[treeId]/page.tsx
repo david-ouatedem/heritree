@@ -5,6 +5,8 @@ import { TreePine, ArrowLeft, Users } from "lucide-react";
 import { AddPersonDialog } from "@/components/tree/AddPersonDialog";
 import { PersonCard } from "@/components/tree/PersonCard";
 import { AddRelationshipDialog } from "@/components/tree/AddRelationshipDialog";
+import { FamilyTreeView } from "@/components/tree/FamilyTreeView";
+import { TreeViewToggle } from "@/components/tree/TreeViewToggle";
 
 export default async function TreePage({
   params,
@@ -15,6 +17,29 @@ export default async function TreePage({
   const tree = await getTreeWithPersons(treeId);
 
   if (!tree) notFound();
+
+  // Prepare persons data for the tree view (serialize dates for client)
+  const personsForTree = tree.persons.map((p) => ({
+    id: p.id,
+    firstName: p.firstName,
+    lastName: p.lastName,
+    birthDate: p.birthDate,
+    deathDate: p.deathDate,
+    gender: p.gender,
+    isLiving: p.isLiving,
+    relationshipsAsSource: p.relationshipsAsSource.map((r) => ({
+      id: r.id,
+      type: r.type,
+      nature: r.nature,
+      person2Id: r.person2Id,
+    })),
+    relationshipsAsTarget: p.relationshipsAsTarget.map((r) => ({
+      id: r.id,
+      type: r.type,
+      nature: r.nature,
+      person1Id: r.person1Id,
+    })),
+  }));
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -70,15 +95,20 @@ export default async function TreePage({
             <AddPersonDialog treeId={tree.id} />
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {tree.persons.map((person) => (
-              <PersonCard
-                key={person.id}
-                person={person}
-                treeId={tree.id}
-              />
-            ))}
-          </div>
+          <TreeViewToggle
+            treeView={<FamilyTreeView persons={personsForTree} />}
+            listView={
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {tree.persons.map((person) => (
+                  <PersonCard
+                    key={person.id}
+                    person={person}
+                    treeId={tree.id}
+                  />
+                ))}
+              </div>
+            }
+          />
         )}
       </main>
     </div>
