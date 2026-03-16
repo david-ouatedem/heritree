@@ -91,6 +91,20 @@
 - [x] Skip option to go straight to tree view
 - [x] Progress indicator (step 1/2)
 
+### 2026-03-16 — V1 Polish: Search, Side Panel, Tree Settings
+- [x] Search bar in tree view — filters by name, highlights matches, dims others, zoom navigation (↑/↓)
+- [x] Side panel on node click — shows person details + grouped relationships without leaving tree
+- [x] Click related persons in side panel to navigate between them
+- [x] "View full profile" link in side panel
+- [x] Person detail API endpoint: `GET /api/persons/[personId]`
+- [x] Tree settings page at `/tree/[treeId]/settings`
+- [x] Tree rename + description edit in settings
+- [x] Delete tree with type-to-confirm safety
+- [x] Settings gear icon in tree header
+- [x] Refactored tree page: TreeWorkspace client component manages view toggle + side panel state
+- [x] PersonNode no longer uses router directly — clicks handled via onNodeClick callback
+- [x] Deployed to Vercel + Neon PostgreSQL (production DB seeded)
+
 ## Project Structure
 ```
 heritree/
@@ -125,7 +139,11 @@ heritree/
 │   │       ├── EditPersonForm.tsx  # Inline edit form
 │   │       ├── CreateTreeDialog.tsx
 │   │       ├── AddPersonDialog.tsx
-│   │       └── AddRelationshipDialog.tsx
+│   │       ├── AddRelationshipDialog.tsx
+│   │       ├── TreeWorkspace.tsx     # Client wrapper: view toggle + side panel
+│   │       ├── PersonSidePanel.tsx   # Slide-over panel for person details
+│   │       ├── TreeSettingsForm.tsx  # Tree name/description edit
+│   │       └── DeleteTreeButton.tsx  # Type-to-confirm delete
 │   ├── generated/prisma/          # Prisma client (gitignored)
 │   ├── lib/
 │   │   ├── auth.ts                # NextAuth config
@@ -144,16 +162,16 @@ heritree/
 ├── HERITREE_PROJECT.md
 └── .env.example
 
-Routes: / /login /signup /dashboard /onboarding /tree/[treeId] /person/[personId]
-API: /api/auth/* /api/trees /api/persons
+Routes: / /login /signup /dashboard /onboarding /tree/[treeId] /tree/[treeId]/settings /person/[personId]
+API: /api/auth/* /api/trees /api/persons /api/persons/[personId]
 ```
 
 ## Next Up
-- [ ] Vercel deployment config (postinstall script for prisma generate)
-- [ ] Delete tree functionality (UI)
-- [ ] Search/filter persons within a tree
-- [ ] Tree settings page (rename, privacy, delete)
-- [ ] Photo upload for persons (S3-compatible storage)
-- [ ] Collaboration (invite via email, view/edit access)
-- [ ] Import/Export GEDCOM format
+- [ ] Add nationality + occupation fields to Person model
+- [ ] Ancestors/descendants/full tree view toggles
+- [ ] Photo upload for persons (Vercel Blob or S3)
 - [ ] Timeline view of family events
+- [ ] Stories/notes attached to persons
+- [ ] Collaboration (invite via email, view/edit access)
+- [ ] GEDCOM import/export
+- [ ] PDF/image export of tree
