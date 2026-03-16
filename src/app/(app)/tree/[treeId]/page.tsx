@@ -1,12 +1,10 @@
 import { getTreeWithPersons } from "@/lib/actions/person";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { TreePine, ArrowLeft, Users } from "lucide-react";
+import { TreePine, ArrowLeft, Users, Settings } from "lucide-react";
 import { AddPersonDialog } from "@/components/tree/AddPersonDialog";
-import { PersonCard } from "@/components/tree/PersonCard";
 import { AddRelationshipDialog } from "@/components/tree/AddRelationshipDialog";
-import { FamilyTreeView } from "@/components/tree/FamilyTreeView";
-import { TreeViewToggle } from "@/components/tree/TreeViewToggle";
+import { TreeWorkspace } from "@/components/tree/TreeWorkspace";
 
 export default async function TreePage({
   params,
@@ -18,7 +16,7 @@ export default async function TreePage({
 
   if (!tree) notFound();
 
-  // Prepare persons data for the tree view (serialize dates for client)
+  // Prepare persons data for the tree view
   const personsForTree = tree.persons.map((p) => ({
     id: p.id,
     firstName: p.firstName,
@@ -58,10 +56,18 @@ export default async function TreePage({
               <h1 className="text-lg font-semibold">{tree.name}</h1>
             </div>
           </div>
-          <div className="flex items-center gap-2 text-sm text-gray-400">
-            <Users className="h-4 w-4" />
-            {tree.persons.length}{" "}
-            {tree.persons.length === 1 ? "person" : "people"}
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-sm text-gray-400">
+              <Users className="h-4 w-4" />
+              {tree.persons.length}{" "}
+              {tree.persons.length === 1 ? "person" : "people"}
+            </div>
+            <Link
+              href={`/tree/${tree.id}/settings`}
+              className="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600"
+            >
+              <Settings className="h-4 w-4" />
+            </Link>
           </div>
         </div>
       </header>
@@ -95,19 +101,10 @@ export default async function TreePage({
             <AddPersonDialog treeId={tree.id} />
           </div>
         ) : (
-          <TreeViewToggle
-            treeView={<FamilyTreeView persons={personsForTree} />}
-            listView={
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {tree.persons.map((person) => (
-                  <PersonCard
-                    key={person.id}
-                    person={person}
-                    treeId={tree.id}
-                  />
-                ))}
-              </div>
-            }
+          <TreeWorkspace
+            treeId={tree.id}
+            personsForTree={personsForTree}
+            personsForCards={tree.persons}
           />
         )}
       </main>
